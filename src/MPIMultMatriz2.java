@@ -24,12 +24,15 @@ public class MPIMultMatriz2 {
 		
 		double subMatrizAux1[][] = new double[N][M];
 		double subMatrizAux2[][] = new double[N][M];
+		double matrizFinal[][] = new double[M][M];
+		Object objetoFinal=new Object();
+		Object matrizCompleta = null;
+		
 		
 		///////////////////////////// maestro /////////////////////////////////////////////
 		if(me==0)
 		{
 			//master
-	
 		
 		////////////////////////////////inicializa el matriz
 		Random r = new Random();
@@ -39,9 +42,7 @@ public class MPIMultMatriz2 {
 			{
 				subMatriz1[i][j]=r.nextDouble();
 				subMatriz2[i][j]=r.nextDouble();	
-				
-				
-				
+	
 			}				
 			vectorB[i]=r.nextDouble();			
 			System.out.println(subMatriz1);			
@@ -53,7 +54,7 @@ public class MPIMultMatriz2 {
 		
 		for (int i = 0; i < 2; i++) {
 			//
-			MPI.COMM_WORLD.Send(envio[i], 0, 1, MPI.OBJECT, (i+1), 10);  // manda desde la pos 0, 1 objeto, a partir del hilo 1 al 3
+			MPI.COMM_WORLD.Send(envio, 0, 1, MPI.OBJECT, (i+1), 10);  // manda desde la pos 0, 1 objeto, a partir del hilo 1 al 3
 		}
 		System.out.println("Finaliza matriz enviada por el hilo: " + me);
 	
@@ -63,46 +64,43 @@ public class MPIMultMatriz2 {
 		//////////////////////////// otros hilos ///////////////////////////////////////////////////////////
 		else
 		{
-
-
 			Object recepcion[]=new Object[1];
-
-			MPI.COMM_WORLD.Recv(recepcion,0, 1, MPI.OBJECT, 0,10);
-		
-			System.out.println("asd"+me);
-			
+			MPI.COMM_WORLD.Recv(recepcion,0, 1, MPI.OBJECT, 0,10);	
 			System.out.println(recepcion.toString());
-		
-
-		
-			 subMatrizAux2=(double[][])  recepcion[0];
-			
-			
+			 subMatrizAux2=(double[][])  recepcion[0];		
 			System.out.println("Finaliza matriz recibida por el hilo: " + me);
+					
+		}
+		//////////////////////////////////////////////////////////////////////////////////////
+		MPI.COMM_WORLD.Bcast(vectorB, 0, M, MPI.DOUBLE, 0);
+		System.out.print("vector---  ");	
+		for(int i=0;i<N;i++)
+		{
+			System.out.print(vectorB[i]+ " ");			
+			
+		}
+		System.out.print("---  ");
+		System.out.println();
+		System.out.println("Finaliza el vector recibido por el hilo: " + me);	
+		//////////////////////////////	
+		
+		System.out.println("La submatriz es");
+		
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < vectorB.length; j++) {
+				
+				matrizResultado1[i][j] = subMatrizAux2[i][j]*vectorB[j];
+				System.out.println("---"+matrizResultado1[i][j]+ " ");
+			
+			}
 			
 			
 		}
-		//////////////////////////////////////////////////////////////////////////////////////
-//		MPI.COMM_WORLD.Bcast(vectorB, 0, M, MPI.DOUBLE, 0);
-//		System.out.print("vector---  ");	
-//		for(int i=0;i<N;i++)
-//		{
-//			System.out.print(vectorB[i]+ " ");			
-//			
-//		}
-//		System.out.print("---  ");
-//		System.out.println();
-//		System.out.println("Finaliza el vector recibido por el hilo: " + me);	
-		//////////////////////////////	
+		/// falta asignas ambas submatrices a una submatriz
+		objetoFinal = matrizFinal;
 		
-		
-//		for (int i = 0; i < N; i++) {
-//			for (int j = 0; j < vectorB.length; i++) {
-//				
-//				matrizResultado1[i][j] = subMatrizAux1[i][j]*vectorB[j];
-//				System.out.println(matrizResultado1[i][j]+ " ");
-//			}
-//		}
+
+		MPI.COMM_WORLD.Gather(objetoFinal, 0,1 , MPI.OBJECT ,matrizCompleta, 0, 1, MPI.OBJECT, 0);
 		
 		
 	
