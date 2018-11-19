@@ -15,6 +15,7 @@ public class MPIMultMatriz2 {
 		int N=2;
 		int M=4;
 		
+		
 		Object envio[]=new Object[2];
 		double  vectorBN [] = new double[M];
 		double vectorCompletoCN [] = new double[6];
