@@ -1,18 +1,22 @@
 import java.text.DecimalFormat;
 import java.util.Random;
+import java.util.Scanner;
 
 import mpi.Datatype;
 import mpi.MPI;
 
 public class MPIMultMatriz2 {
 
-	static int N=2;
-	static int M=4;	
+	static int M=8;
+	static int N=M/2;
+	
 	static Object envio[]=new Object[2];
 	static double  vectorBN [] = new double[M];
-	static double vectorCompletoC [] = new double[6];
+	static double vectorCompletoC [] = new double[M+N];
 	static double vectorSubC[] = new double[N];
-	static double vectorCompletoD [] = new double[6];
+	static double vectorCompletoD [] = new double[M+N];
+	static double vecSin0 [] = new double[M];
+	static double vecSin02 [] = new double[M];
 	static double vectorSubD[] = new double[N];
 	static double matrizGigante[][]=new double[M][M];
 	static double subMatriz1[][] = new double[N][M]; //original
@@ -26,20 +30,23 @@ public class MPIMultMatriz2 {
 
 	
 	public static void dividoMatriz(double [][] matrizGigante,Integer M,double [][] subM1,double [][] subM2 ) {
-		Integer N = (M/2);
+	//	Integer N = (M/2);
 		inicializoMatrizAleatorios(matrizGigante); 
 		System.out.println("MATRIZ INICIAL  A ");
 		muestroMatrizG(matrizGigante);
+		int k =0;
 		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < matrizGigante.length; j++) {
 				subM1[i][j]= matrizGigante[i][j];
 			}
 		}
-		for (int i = 2; i < M; i++) {
+		
+		for (int i = N ; i < M; i++) {
 			for (int j = 0; j < matrizGigante.length; j++) {
-				subM2[i-2][j]= matrizGigante[i][j];
+				subM2[k][j]= matrizGigante[i][j];
 			}
+			k ++;
 		}
 	}	
 	
@@ -126,47 +133,75 @@ public class MPIMultMatriz2 {
 		args = MPI.Init(args);
 		me = MPI.COMM_WORLD.Rank();
 		size = MPI.COMM_WORLD.Size();
-		
+		int dimension = 0;
+		  Scanner sc = new Scanner (System.in); //Creación de un objeto Scanner
 		///////////////////////////////////////////////////////////////////////////////////
 		if(me==0)
 		{
+		
+		/*	do{
+				System.out.println ("Por favor introduzca una cadena por teclado:");
+				System.out.println(dimension);
+			
+				dimension = sc.nextInt();//Invocamos un método sobre un objeto Scanner
+				System.out.println(dimension);
+		       
+			}while(dimension == 0);*/
+			
+		     //   System.out.println ("Entrada recibida por teclado es: \"" + dimension +"\"");
+			
 			
 				//inicializoMatrizAleatorios(subMatriz1); 	
 				//inicializoMatrizAleatorios(subMatriz2);
+			
+			
 				dividoMatriz(matrizGigante, M, subMatriz1, subMatriz2);
 				inicializoVectorAleatorios(vectorBN); 
-				inicializoVector00(vectorCompletoC);
-				inicializoVector00(vectorSubC);
-				inicializoVector00(vectorCompletoD);
-				inicializoVector00(vectorSubD);
+
 				envio[0]=(Object)subMatriz1;
 				envio[1]=(Object)subMatriz2; 
 				
-				for (int i = 0; i <= 1; i++) {
-					MPI.COMM_WORLD.Send(envio, i,1, MPI.OBJECT, i+1 , 10);}	 
+		for (int i = 0; i <= 1; i++) {
+		
+				MPI.COMM_WORLD.Send(envio, i,1, MPI.OBJECT, i+1, 10);}	  //envio una subMatriz al hilo 0 y otra al hilo 1
 				System.out.println("Matriz sub1"); muestroMatriz(subMatriz1);
 				System.out.println("Matriz sub2"); muestroMatriz(subMatriz2);
 				System.out.println("vector B");muestrovector(vectorBN);				
 		}
 		
+		if(me!=0) {
+		inicializoVector00(vectorCompletoC);
+		inicializoVector00(vectorSubC);
+		inicializoVector00(vectorCompletoD);
+		inicializoVector00(vectorSubD);
+		}
+		
 		////////////////////////////////////////////////////////////////////////////////////	
+		
+		
 		if(me!=0) {
 		Object recepcion[]=new Object[2];
 		MPI.COMM_WORLD.Recv(recepcion,0, 1, MPI.OBJECT, 0,10);	
-		subMatrizAux=(double[][]) recepcion[0];	
-		
+		subMatrizAux=(double[][]) recepcion[0];		
 		}
 			
 		////////////////////////////////////////////OBTENCION DE VECTOR C//////////////////////////////////////////////
-		MPI.COMM_WORLD.Bcast(vectorBN, 0, M, MPI.DOUBLE, 0); //envia vector a los demas hilos
-			
+		MPI.COMM_WORLD.Bcast(vectorBN, 0, M, MPI.DOUBLE, 0); //envia vector a los demas hilos	
 		if(me!=0) {vectorSubC = multiMatrizVector(subMatrizAux,vectorBN);} //cada hilo multiplica su submatriz por el vector
 		
 		MPI.COMM_WORLD.Gather(vectorSubC, 0,vectorSubC.length , MPI.DOUBLE ,vectorCompletoC, 0, vectorSubC.length, MPI.DOUBLE, 0); //vectorCompleto = B(M)	
 		
 		if(me==0) {
 			System.out.println("Vector C(N) = A(N x N) x B(N) ");
-			muestrovector(vectorCompletoC);}
+		int k =0;
+			for (int i = 4; i < 12; i++) {
+				
+				vecSin0 [k]= vectorCompletoC[i];
+				k++;
+			}
+
+			muestrovector(vecSin0);
+		}
 		////////////////////////////////////////////////OBTENCION DEL VECTOR D///////////////////////////////////////////////
 		
 		MPI.COMM_WORLD.Bcast(vectorCompletoC, 0, M, MPI.DOUBLE, 0); //envia vector C a todos
@@ -176,13 +211,19 @@ public class MPIMultMatriz2 {
 		MPI.COMM_WORLD.Gather(vectorSubD, 0,vectorSubD.length , MPI.DOUBLE ,vectorCompletoD, 0, vectorSubD.length, MPI.DOUBLE, 0); //vectorCompleto = B(M)	
 		
 		if (me==0) {
-			System.out.println("Vector D(N) = A(NxN) × C(N)\r\n" + 
-					"");
-			muestrovector(vectorCompletoD);
+			System.out.println("Vector D(N) = A(NxN) × C(N)\r\n" + "");
+			int k =0;
+			for (int i = 4; i < 12; i++) {
+				
+				vecSin02 [k]= vectorCompletoD[i];
+				k++;
+			}
+			muestrovector(vecSin02);
 			System.out.println("X = C(N) x D(N)= ");
 			System.out.println("		"+productoVectores(vectorCompletoC, vectorCompletoD));
 			
 		}
+	
 		///////////////////////////////////////////OBTENGO C * D //////////////////////////////////////////////
 		
 		
