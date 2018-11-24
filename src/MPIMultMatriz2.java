@@ -7,7 +7,7 @@ import mpi.MPI;
 
 public class MPIMultMatriz2 {
 
-	static int M=800;
+	static int M=2000;
 	static int N=M/2;
 	
 	static Object envio[]=new Object[2];
@@ -134,7 +134,9 @@ public class MPIMultMatriz2 {
 		args = MPI.Init(args);
 		me = MPI.COMM_WORLD.Rank();
 		size = MPI.COMM_WORLD.Size();
-		long startTime = System.nanoTime();
+		//long startTime = System.nanoTime();
+		long startTime = System.currentTimeMillis();
+		
 		double start = MPI.Wtime();
 		
 		int dimension = 0;
@@ -235,7 +237,8 @@ public class MPIMultMatriz2 {
 		///////////////////////////////////////////OBTENGO C * D //////////////////////////////////////////////
 		//System.out.println("Empieza: "+start+" termina: "+end);
 				
-				long estimatedTime = System.nanoTime() - startTime;
+			//	long estimatedTime = System.nanoTime() - startTime;
+				long estimatedTime = (System.currentTimeMillis()-startTime);
 		//System.out.println("El tiempo es: "+String.valueOf(end-start));
 		System.out.println("El tiempo es: "+estimatedTime);
 		

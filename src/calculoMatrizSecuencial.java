@@ -26,7 +26,8 @@ public class calculoMatrizSecuencial {
 	
 	public static void main(String[] args) {
 	//declaracion variables
-	long startTime = System.nanoTime();
+	//long startTime = System.nanoTime();
+		long startTime = System.currentTimeMillis();
 	double start = MPI.Wtime();
 	
 	Integer i;
@@ -72,7 +73,8 @@ public class calculoMatrizSecuencial {
 	System.out.println("X es "+sum);
 	//System.out.println("Empieza: "+start+" termina: "+end);
 	//System.out.println("El tiempo es: "+String.valueOf(end-start));
-	long estimatedTime = System.nanoTime() - startTime;
+	
+	long estimatedTime = (System.currentTimeMillis()-startTime);
 	System.out.println("El tiempo es: "+estimatedTime);
 	}	
 }
