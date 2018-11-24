@@ -7,7 +7,7 @@ import mpi.MPI;
 
 public class MPIMultMatriz2 {
 
-	static int M=8;
+	static int M=400;
 	static int N=M/2;
 	
 	static Object envio[]=new Object[2];
@@ -194,7 +194,7 @@ public class MPIMultMatriz2 {
 		if(me==0) {
 			System.out.println("Vector C(N) = A(N x N) x B(N) ");
 		int k =0;
-			for (int i = 4; i < 12; i++) {
+			for (int i = N; i < M+N; i++) {
 				
 				vecSin0 [k]= vectorCompletoC[i];
 				k++;
@@ -213,14 +213,14 @@ public class MPIMultMatriz2 {
 		if (me==0) {
 			System.out.println("Vector D(N) = A(NxN) × C(N)\r\n" + "");
 			int k =0;
-			for (int i = 4; i < 12; i++) {
+			for (int i = N; i < M+N; i++) {
 				
 				vecSin02 [k]= vectorCompletoD[i];
 				k++;
 			}
 			muestrovector(vecSin02);
 			System.out.println("X = C(N) x D(N)= ");
-			System.out.println("		"+productoVectores(vectorCompletoC, vectorCompletoD));
+			System.out.println("		"+productoVectores(vecSin0, vecSin02));
 			
 		}
 	
