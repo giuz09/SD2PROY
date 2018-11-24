@@ -4,7 +4,7 @@ import mpi.MPI;
 
 public class calculoMatrizSecuencial {
 	
-	static Integer N = 800;
+	static Integer N = 4000;
 	
 	public static void muestrovector(double[] vector) {
 		for (int i = 0; i < vector.length; i++) {
