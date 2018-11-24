@@ -4,7 +4,7 @@ import mpi.MPI;
 
 public class calculoMatrizSecuencial {
 	
-	static Integer N = 50;
+	static Integer N = 800;
 	
 	public static void muestrovector(double[] vector) {
 		for (int i = 0; i < vector.length; i++) {
@@ -26,8 +26,9 @@ public class calculoMatrizSecuencial {
 	
 	public static void main(String[] args) {
 	//declaracion variables
+	long startTime = System.nanoTime();
 	double start = MPI.Wtime();
-	double end = MPI.Wtime();
+	
 	Integer i;
 	Integer j;
 	double sum;
@@ -59,6 +60,7 @@ public class calculoMatrizSecuencial {
 		}
 		sum = sum+D[i]*C[i];
 	}
+	double end = MPI.Wtime();
 	//////////////resultado de X 
 	muestroMatriz(matrizA);
 	System.out.println("vector B");
@@ -68,7 +70,9 @@ public class calculoMatrizSecuencial {
 	System.out.println("Vector D(N) = A(NxN) × C(N)\r\n" + "");
 	muestrovector(D);
 	System.out.println("X es "+sum);
-	System.out.println("Empieza: "+start+" termina: "+end);
-	
+	//System.out.println("Empieza: "+start+" termina: "+end);
+	//System.out.println("El tiempo es: "+String.valueOf(end-start));
+	long estimatedTime = System.nanoTime() - startTime;
+	System.out.println("El tiempo es: "+estimatedTime);
 	}	
 }

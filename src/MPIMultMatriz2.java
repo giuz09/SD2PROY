@@ -7,7 +7,7 @@ import mpi.MPI;
 
 public class MPIMultMatriz2 {
 
-	static int M=50;
+	static int M=800;
 	static int N=M/2;
 	
 	static Object envio[]=new Object[2];
@@ -134,8 +134,9 @@ public class MPIMultMatriz2 {
 		args = MPI.Init(args);
 		me = MPI.COMM_WORLD.Rank();
 		size = MPI.COMM_WORLD.Size();
+		long startTime = System.nanoTime();
 		double start = MPI.Wtime();
-		double end = MPI.Wtime();
+		
 		int dimension = 0;
 		  Scanner sc = new Scanner (System.in); //Creación de un objeto Scanner
 		///////////////////////////////////////////////////////////////////////////////////
@@ -213,6 +214,7 @@ public class MPIMultMatriz2 {
 		
 		MPI.COMM_WORLD.Gather(vectorSubD, 0,vectorSubD.length , MPI.DOUBLE ,vectorCompletoD, 0, vectorSubD.length, MPI.DOUBLE, 0); //vectorCompleto = B(M)	
 		
+		
 		if (me==0) {
 			System.out.println("Vector D(N) = A(NxN) × C(N)\r\n" + "");
 			int k =0;
@@ -226,9 +228,17 @@ public class MPIMultMatriz2 {
 			System.out.println("		"+productoVectores(vecSin0, vecSin02));
 			
 		}
+		//linea end 
+				double end = MPI.Wtime();
+		//
 	
 		///////////////////////////////////////////OBTENGO C * D //////////////////////////////////////////////
-		System.out.println("Empieza: "+start+" termina: "+end);
+		//System.out.println("Empieza: "+start+" termina: "+end);
+				
+				long estimatedTime = System.nanoTime() - startTime;
+		//System.out.println("El tiempo es: "+String.valueOf(end-start));
+		System.out.println("El tiempo es: "+estimatedTime);
+		
 		
 	} //llave main
 
