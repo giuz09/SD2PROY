@@ -7,7 +7,7 @@ import mpi.MPI;
 
 public class MPIMultMatriz2 {
 
-	static int M=400;
+	static int M=50;
 	static int N=M/2;
 	
 	static Object envio[]=new Object[2];
@@ -26,6 +26,7 @@ public class MPIMultMatriz2 {
 	static Object objetoFinal=new Object();
 	static double sumatoria = 0.0;
 	static int me,size;
+
 	
 
 	
@@ -133,6 +134,8 @@ public class MPIMultMatriz2 {
 		args = MPI.Init(args);
 		me = MPI.COMM_WORLD.Rank();
 		size = MPI.COMM_WORLD.Size();
+		double start = MPI.Wtime();
+		double end = MPI.Wtime();
 		int dimension = 0;
 		  Scanner sc = new Scanner (System.in); //Creación de un objeto Scanner
 		///////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +228,7 @@ public class MPIMultMatriz2 {
 		}
 	
 		///////////////////////////////////////////OBTENGO C * D //////////////////////////////////////////////
-		
+		System.out.println("Empieza: "+start+" termina: "+end);
 		
 	} //llave main
 

@@ -4,7 +4,7 @@ import mpi.MPI;
 
 public class calculoMatrizSecuencial {
 	
-	static Integer N = 4;
+	static Integer N = 50;
 	
 	public static void muestrovector(double[] vector) {
 		for (int i = 0; i < vector.length; i++) {
@@ -68,7 +68,7 @@ public class calculoMatrizSecuencial {
 	System.out.println("Vector D(N) = A(NxN) × C(N)\r\n" + "");
 	muestrovector(D);
 	System.out.println("X es "+sum);
-	System.out.println("Demora : "+(start-end));
+	System.out.println("Empieza: "+start+" termina: "+end);
 	
 	}	
 }
